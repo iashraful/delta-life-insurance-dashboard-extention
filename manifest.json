@@ -1,0 +1,10 @@
+{
+    "name": "Delta Life Dashboard V2",
+    "description": "This is the extention for delta life insurance portal.",
+    "version": "1.0",
+    "manifest_version": 3,
+    "action": {
+      "default_popup": "dashboard.html",
+      "default_icon": "logo.png"
+    }
+  }
