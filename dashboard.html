@@ -1,13 +1,55 @@
 <html>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 1em;
+      background-color: #f4f4f4;
+    }
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td,
+    th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+  </style>
   <body>
-    <div>
+    <div id="in_patient">
       <h2>In Patient</h2>
-      <pre id="in_patient">Loading...</pre>
+      <table>
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Pending</th>
+            <th>Completed</th>
+          </tr>
+        </thead>
+        <tbody id="in_patient_table_body"></tbody>
+      </table>
     </div>
-    <hr />
-    <div>
+    <hr id="divider"/>
+    <div id="out_patient">
       <h2>Out Patient</h2>
-      <pre id="out_patient">Loading...</pre>
+      <table>
+        <thead>
+          <tr>
+            <th>Patient</th>
+            <th>Pending</th>
+            <th>Completed</th>
+          </tr>
+        </thead>
+        <tbody id="out_patient_table_body"></tbody>
+      </table>
     </div>
     <script src="./popup.js"></script>
   </body>

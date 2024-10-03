@@ -14,23 +14,38 @@ document.addEventListener("DOMContentLoaded", () => {
       activeTab.id,
       { action: "getLocalStorage" },
       async (response) => {
-        const inPatientElem = document.getElementById("in_patient");
-        const outPatientElem = document.getElementById("out_patient");
-        if (response && response.localStorageData) {
-          const claimResp = await getClaims(response.localStorageData);
-          const claims = await claimResp.json();
-          const displayData = calculateDashboard(claims.data);
-          // Display the local storage data
-          inPatientElem.textContent = JSON.stringify(displayData.in, null, 2);
-          outPatientElem.textContent = JSON.stringify(displayData.out, null, 2);
-        } else {
-          inPatientElem.textContent = "No data found.";
-          outPatientElem.textContent = "No data found.";
-        }
+        await showDashboard(response);
       }
     );
   });
 });
+
+async function showDashboard(response) {
+  const inPatientElem = document.getElementById("in_patient");
+  const inPatientTableBodyElem = document.getElementById(
+    "in_patient_table_body"
+  );
+  const outPatientElem = document.getElementById("out_patient");
+  const outPatientTableBodyElem = document.getElementById(
+    "out_patient_table_body"
+  );
+  if (response && response.localStorageData) {
+    const claimResp = await getClaims(response.localStorageData);
+    const claims = await claimResp.json();
+    const displayData = calculateDashboard(claims.data);
+    prepareTable(inPatientTableBodyElem, displayData.in);
+    prepareTable(outPatientTableBodyElem, displayData.out);
+
+    if (Object.keys(displayData.in).length < 1) {
+      inPatientElem.style.display = "none";
+      document.getElementById("divider").style.display = "none";
+    }
+    if (Object.keys(displayData.out).length < 1) {
+      outPatientElem.style.display = "none";
+      document.getElementById("divider").style.display = "none";
+    }
+  }
+}
 
 async function getClaims(localStorageData) {
   userToken = localStorageData.hi_claim_userToken;
@@ -65,11 +80,23 @@ function calculateDashboard(data) {
         pending: 0,
       };
     }
-    console.log(visitType);
     claim_info[visitType][item.name]["completed"] +=
       item.status == "5" ? JSON.parse(item.claim_amount.split(" ")[1]) : 0;
     claim_info[visitType][item.name]["pending"] +=
       item.status != "5" ? JSON.parse(item.claim_amount.split(" ")[1]) : 0;
   }
+  console.log(claim_info);
   return claim_info;
+}
+
+function prepareTable(tBodyElem, data) {
+  for (const [key, value] of Object.entries(data)) {
+    const row = tBodyElem.insertRow();
+    const cell1 = row.insertCell();
+    const cell2 = row.insertCell();
+    const cell3 = row.insertCell();
+    cell1.textContent = key;
+    cell2.textContent = value["pending"];
+    cell3.textContent = value["completed"];
+  }
 }
