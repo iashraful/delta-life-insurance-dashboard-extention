@@ -4,8 +4,10 @@
     <link rel="stylesheet" href="./style.css" />
 
     <div id="in_patient">
-      <h2>In Patient</h2>
-      <table>
+      <h2>
+        In Patient <span id="in-date-range">(2024-07-01 to 2025-06-30)</span>
+      </h2>
+      <table id="in-patient-table">
         <thead>
           <tr>
             <th>Patient</th>
@@ -19,8 +21,10 @@
     </div>
     <hr id="divider" />
     <div id="out_patient">
-      <h2>Out Patient</h2>
-      <table>
+      <h2>
+        Out Patient <span id="in-date-range">(2024-07-01 to 2025-06-30)</span>
+      </h2>
+      <table id="out-patient-table">
         <thead>
           <tr>
             <th>Patient</th>
@@ -36,4 +40,10 @@
     <!-- load js -->
     <script src="./popup.js"></script>
   </body>
+  <footer class="footer">
+    <p>
+      Author: Ashraful Islam<br />
+      <a href="mailto:a5hraful@outlook.com">a5hraful@outlook.com</a>
+    </p>
+  </footer>
 </html>

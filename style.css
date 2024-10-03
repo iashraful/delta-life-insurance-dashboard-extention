@@ -33,3 +33,25 @@ td {
 td {
   text-align: center;
 }
+
+#in-date-range,
+#out-date-range {
+  font-size: 12px;
+  color: #2c5e77;
+}
+
+.footer {
+  text-align: center;
+  margin-top: 1rem;
+  padding: 3px;
+  background-color: DarkSalmon;
+  color: white;
+}
+
+#in_patient p {
+  text-align: center;
+}
+
+#out_patient p {
+  text-align: center;
+}

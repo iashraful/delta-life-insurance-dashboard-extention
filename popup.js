@@ -45,12 +45,12 @@ async function showDashboard(response) {
     prepareTableFooter(outPatientTableFootElem, calculatedData.total.out);
 
     if (Object.keys(calculatedData.data.in).length < 1) {
-      inPatientElem.style.display = "none";
-      document.getElementById("divider").style.display = "none";
+      inPatientElem.appendChild(addTextChildElem("p", "No data found"));
+      document.getElementById("in-patient-table").style.display = "none";
     }
     if (Object.keys(calculatedData.data.out).length < 1) {
-      outPatientElem.style.display = "none";
-      document.getElementById("divider").style.display = "none";
+      outPatientElem.appendChild(addTextChildElem("p", "No data found"));
+      document.getElementById("out-patient-table").style.display = "none";
     }
   }
 }
@@ -119,11 +119,20 @@ function prepareTable(tBodyElem, data) {
 }
 
 function prepareTableFooter(tFootElem, data) {
-  const row = tFootElem.insertRow();
-  const cell1 = row.insertCell();
-  const cell2 = row.insertCell();
-  const cell3 = row.insertCell();
-  cell1.textContent = "Total";
-  cell2.textContent = data.pending;
-  cell3.textContent = data.completed;
+  if (data.pending > 0 || data.completed > 0) {
+    const row = tFootElem.insertRow();
+    const cell1 = row.insertCell();
+    const cell2 = row.insertCell();
+    const cell3 = row.insertCell();
+    cell1.textContent = "Total";
+    cell2.textContent = data.pending;
+    cell3.textContent = data.completed;
+  }
+}
+
+function addTextChildElem(tag, text) {
+  const node = document.createElement(tag);
+  const textnode = document.createTextNode(text);
+  node.appendChild(textnode);
+  return node;
 }
