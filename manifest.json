@@ -9,6 +9,15 @@
     },
     "permissions": [
       "webRequest",
-      "<all_urls>"
-    ]
+      "activeTab"
+    ],
+    "host_permissions": [
+      "*://*/*"
+    ],
+    "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
   }
