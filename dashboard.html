@@ -1,29 +1,8 @@
 <html>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 1em;
-      background-color: #f4f4f4;
-    }
-    table {
-      font-family: arial, sans-serif;
-      border-collapse: collapse;
-      width: 100%;
-    }
-
-    td,
-    th {
-      border: 1px solid #dddddd;
-      text-align: left;
-      padding: 8px;
-    }
-
-    tr:nth-child(even) {
-      background-color: #dddddd;
-    }
-  </style>
   <body>
+    <!-- load css -->
+    <link rel="stylesheet" href="./style.css" />
+
     <div id="in_patient">
       <h2>In Patient</h2>
       <table>
@@ -35,9 +14,10 @@
           </tr>
         </thead>
         <tbody id="in_patient_table_body"></tbody>
+        <tfoot id="in_patient_table_foot"></tfoot>
       </table>
     </div>
-    <hr id="divider"/>
+    <hr id="divider" />
     <div id="out_patient">
       <h2>Out Patient</h2>
       <table>
@@ -49,8 +29,11 @@
           </tr>
         </thead>
         <tbody id="out_patient_table_body"></tbody>
+        <tfoot id="out_patient_table_foot"></tfoot>
       </table>
     </div>
+
+    <!-- load js -->
     <script src="./popup.js"></script>
   </body>
 </html>

@@ -25,22 +25,30 @@ async function showDashboard(response) {
   const inPatientTableBodyElem = document.getElementById(
     "in_patient_table_body"
   );
+  const inPatientTableFootElem = document.getElementById(
+    "in_patient_table_foot"
+  );
   const outPatientElem = document.getElementById("out_patient");
   const outPatientTableBodyElem = document.getElementById(
     "out_patient_table_body"
   );
+  const outPatientTableFootElem = document.getElementById(
+    "out_patient_table_foot"
+  );
   if (response && response.localStorageData) {
     const claimResp = await getClaims(response.localStorageData);
     const claims = await claimResp.json();
-    const displayData = calculateDashboard(claims.data);
-    prepareTable(inPatientTableBodyElem, displayData.in);
-    prepareTable(outPatientTableBodyElem, displayData.out);
+    const calculatedData = calculateDashboard(claims.data);
+    prepareTable(inPatientTableBodyElem, calculatedData.data.in);
+    prepareTable(outPatientTableBodyElem, calculatedData.data.out);
+    prepareTableFooter(inPatientTableFootElem, calculatedData.total.in);
+    prepareTableFooter(outPatientTableFootElem, calculatedData.total.out);
 
-    if (Object.keys(displayData.in).length < 1) {
+    if (Object.keys(calculatedData.data.in).length < 1) {
       inPatientElem.style.display = "none";
       document.getElementById("divider").style.display = "none";
     }
-    if (Object.keys(displayData.out).length < 1) {
+    if (Object.keys(calculatedData.data.out).length < 1) {
       outPatientElem.style.display = "none";
       document.getElementById("divider").style.display = "none";
     }
@@ -66,6 +74,10 @@ function calculateDashboard(data) {
     in: {},
     out: {},
   };
+  let total_count = {
+    in: { completed: 0, pending: 0 },
+    out: { completed: 0, pending: 0 },
+  };
   for (const item of data) {
     const dt = new Date(item.created_at);
     if (dt < startDate || dt > endDate) {
@@ -84,9 +96,14 @@ function calculateDashboard(data) {
       item.status == "5" ? JSON.parse(item.claim_amount.split(" ")[1]) : 0;
     claim_info[visitType][item.name]["pending"] +=
       item.status != "5" ? JSON.parse(item.claim_amount.split(" ")[1]) : 0;
+
+    total_count[visitType]["completed"] +=
+      item.status == "5" ? JSON.parse(item.claim_amount.split(" ")[1]) : 0;
+    total_count[visitType]["pending"] +=
+      item.status != "5" ? JSON.parse(item.claim_amount.split(" ")[1]) : 0;
   }
-  console.log(claim_info);
-  return claim_info;
+  console.log(claim_info, total_count);
+  return { data: claim_info, total: total_count };
 }
 
 function prepareTable(tBodyElem, data) {
@@ -99,4 +116,14 @@ function prepareTable(tBodyElem, data) {
     cell2.textContent = value["pending"];
     cell3.textContent = value["completed"];
   }
+}
+
+function prepareTableFooter(tFootElem, data) {
+  const row = tFootElem.insertRow();
+  const cell1 = row.insertCell();
+  const cell2 = row.insertCell();
+  const cell3 = row.insertCell();
+  cell1.textContent = "Total";
+  cell2.textContent = data.pending;
+  cell3.textContent = data.completed;
 }
