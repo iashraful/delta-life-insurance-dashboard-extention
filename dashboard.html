@@ -1,7 +1,14 @@
 <html>
-  <body>
+  <body style="min-width: 350px">
     <!-- load css -->
     <link rel="stylesheet" href="./style.css" />
+
+    <div>
+      <select id="fiscal-year-select">
+        <option value="Last_Fiscal_Year">Last Fiscal Year</option>
+        <option selected value="This_Fiscal_Year">This Fiscal Year</option>
+      </select>
+    </div>
 
     <div id="in_patient">
       <h2>
@@ -22,7 +29,7 @@
     <hr id="divider" />
     <div id="out_patient">
       <h2>
-        Out Patient <span id="in-date-range">(2024-07-01 to 2025-06-30)</span>
+        Out Patient <span id="out-date-range">(2024-07-01 to 2025-06-30)</span>
       </h2>
       <table id="out-patient-table">
         <thead>

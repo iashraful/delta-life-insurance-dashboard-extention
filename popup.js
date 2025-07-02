@@ -1,8 +1,20 @@
 let userToken = "";
 const apiUrl = "https://hiclaim.deltalife.org/api/v1/get-pending-claims/self";
-// TODO: Let's hardcode the start and end date for now
-const startDate = new Date("2024-07-01");
-const endDate = new Date("2025-06-30");
+let dashResp = null;
+let { startDate, endDate } = getCurrentFiscalYear();
+
+const fiscalYearSelect = document.getElementById("fiscal-year-select");
+fiscalYearSelect.addEventListener("change", async function (value) {
+  let dateRange;
+  if (value.target.value === "Last_Fiscal_Year") {
+    dateRange = getLastFiscalYear();
+  } else {
+    dateRange = getCurrentFiscalYear();
+  }
+  startDate = dateRange.startDate;
+  endDate = dateRange.endDate;
+  await showDashboard(dashResp, true);
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   // Query the active tab
@@ -15,12 +27,63 @@ document.addEventListener("DOMContentLoaded", () => {
       { action: "getLocalStorage" },
       async (response) => {
         await showDashboard(response);
+        dashResp = response;
       }
     );
   });
 });
 
-async function showDashboard(response) {
+function getCurrentFiscalYear() {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth(); // 0-based (0 = January, 6 = July, etc.)
+
+  let startDate, endDate;
+
+  if (currentMonth < 6) {
+    // If current month is before July (January to June)
+    startDate = new Date(currentYear - 1, 6, 1); // July 1st of last year
+    endDate = new Date(currentYear, 5, 30); // June 30th of current year
+  } else {
+    // If current month is July or later
+    startDate = new Date(currentYear, 6, 1); // July 1st of current year
+    endDate = new Date(currentYear + 1, 5, 30); // June 30th of next year
+  }
+
+  return { startDate, endDate };
+}
+
+function getLastFiscalYear() {
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth(); // 0-based (0 = January, 6 = July, etc.)
+
+  let startDate, endDate;
+
+  if (currentMonth < 6) {
+    // If current month is before July (January to June)
+    // Last fiscal year is July 1, two years ago, to June 30, last year
+    startDate = new Date(currentYear - 2, 6, 1); // July 1st of two years ago
+    endDate = new Date(currentYear - 1, 5, 30); // June 30th of last year
+  } else {
+    // If current month is July or later
+    // Last fiscal year is July 1, last year, to June 30, current year
+    startDate = new Date(currentYear - 1, 6, 1); // July 1st of last year
+    endDate = new Date(currentYear, 5, 30); // June 30th of current year
+  }
+
+  return { startDate, endDate };
+}
+
+function updateReportDate(elemId) {
+  const inDateRangeElem = document.getElementById(elemId);
+  inDateRangeElem.textContent = `(${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()})`;
+}
+
+async function showDashboard(response, flushTable = false) {
+  updateReportDate("in-date-range");
+  updateReportDate("out-date-range");
+
   const inPatientElem = document.getElementById("in_patient");
   const inPatientTableBodyElem = document.getElementById(
     "in_patient_table_body"
@@ -35,6 +98,21 @@ async function showDashboard(response) {
   const outPatientTableFootElem = document.getElementById(
     "out_patient_table_foot"
   );
+
+  if (flushTable) {
+    inPatientTableBodyElem.innerHTML = "";
+    inPatientTableFootElem.innerHTML = "";
+    outPatientTableBodyElem.innerHTML = "";
+    outPatientTableFootElem.innerHTML = "";
+    if (inPatientElem && inPatientElem.children.length >= 3) {
+      inPatientElem.children[2].remove(); // Remove the third child element (0-based index)
+      document.getElementById("in-patient-table").style.display = "block";
+    }
+    if (outPatientElem && outPatientElem.children.length >= 3) {
+      outPatientElem.children[2].remove(); // Remove the third child element (0-based index)
+      document.getElementById("out-patient-table").style.display = "block";
+    }
+  }
   if (response && response.localStorageData) {
     const claimResp = await getClaims(response.localStorageData);
     const claims = await claimResp.json();
@@ -102,7 +180,6 @@ function calculateDashboard(data) {
     total_count[visitType]["pending"] +=
       item.status != "5" ? JSON.parse(item.claim_amount.split(" ")[1]) : 0;
   }
-  console.log(claim_info, total_count);
   return { data: claim_info, total: total_count };
 }
 
